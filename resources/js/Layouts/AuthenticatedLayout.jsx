@@ -33,12 +33,12 @@ export default function Authenticated({ user, header, children }) {
                 >
                   Members
                 </NavLink>
-                {/* <NavLink
+                <NavLink
                   href={route("users.index")}
                   active={route().current("users.index")}
                 >
                   Users
-                </NavLink> */}
+                </NavLink>
               </div>
             </div>
 
