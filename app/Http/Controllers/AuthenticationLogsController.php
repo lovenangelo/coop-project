@@ -67,4 +67,34 @@ class AuthenticationLogsController extends Controller
   {
     //
   }
+
+  public function filter(Request $request)
+  {
+    $query = AuthenticationLogs::query();
+
+    $values = $request->all();
+
+    if (array_key_exists('created_at', $values)) {
+      $values['created_at'] = date('Y-m-d', strtotime($values['created_at'] . ' +1 day'));
+    }
+
+    // Apply filters
+    foreach ($values as $field => $value) {
+      if ($field == 'created_at') {
+        $query->whereDate($field, $value);
+      } else {
+        $query->where($field, 'like', "%$value%");
+      }
+    }
+
+    $logs = $query->orderByDesc('created_at')->paginate(20);
+
+    if ($logs) {
+      return Inertia::render('Logs/Index', [
+        'logs' => $logs,
+      ]);
+    } else {
+      return to_route('logs.index');
+    }
+  }
 }

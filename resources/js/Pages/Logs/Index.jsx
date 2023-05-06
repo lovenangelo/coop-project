@@ -1,5 +1,5 @@
 import { Table, Button, Center, Tooltip, Menu } from "@mantine/core";
-// import logForm from "./Components/logForm";
+import LogForm from "./Components/LogForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import Pagination from "../../Components/Pagination";
@@ -84,13 +84,12 @@ function Index({ auth, logs }) {
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Label>Filter Logs</Menu.Label>
-                  {/* <logForm
+                  <LogForm
                     closeForm={close}
                     readOnly={false}
-                    logInformation={null}
                     isFiltering={true}
                     isRegisteringlog={false}
-                  /> */}
+                  />
                 </Menu.Dropdown>
               </Menu>
             </div>

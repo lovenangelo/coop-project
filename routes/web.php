@@ -42,11 +42,14 @@ Route::resource('/members', MembersController::class)
   ->only(['destroy'])
   ->middleware(['auth', UserIsAdmin::class]);
 
+Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(['auth']);
+
 Route::resource('/logs', AuthenticationLogsController::class)
   ->only(['index'])
   ->middleware(['auth', UserIsAdmin::class]);
 
-Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(['auth']);
+Route::get('/logs/filter', [AuthenticationLogsController::class, 'filter'])->middleware(['auth', UserIsAdmin::class]);
+
 
 Route::resource('/users', UsersController::class)->only(['index', 'update', 'destroy'])
   ->middleware(['auth', UserIsAdmin::class]);
