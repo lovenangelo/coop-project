@@ -5,16 +5,24 @@ import MemberForm from "./Components/MemberForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import Pagination from "../../Components/Pagination";
-import { useState, useEffect } from "react";
-import { IconPlus, IconFilter, IconRefresh } from "@tabler/icons-react";
+import { useState, useEffect, useRef } from "react";
+import { DownloadTableExcel } from "react-export-table-to-excel";
+import {
+  IconPlus,
+  IconFilter,
+  IconRefresh,
+  IconTableExport,
+  IconDownload,
+} from "@tabler/icons-react";
 import { router } from "@inertiajs/react";
+import * as XLSX from "xlsx";
 
 function Index({ auth, members }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [readOnly, setReadOnly] = useState(false);
   const [memberInformation, setMemberInformation] = useState(null);
   const [membersList, setMembersList] = useState(members);
-  console.log(auth);
+  console.log(membersList);
   useEffect(() => {
     setMembersList(members);
     return () => {};
@@ -42,6 +50,34 @@ function Index({ auth, members }) {
     setReadOnly(true);
     setMemberInformation(rowData);
     open();
+  };
+
+  const handleExport = () => {
+    // flatten object like this {id: 1, title:'', category: ''};
+    // create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(membersList.data);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Members");
+
+    XLSX.utils.sheet_add_aoa(worksheet, [
+      [
+        "ID",
+        "CID",
+        "Name",
+        "Date of Birth",
+        "Occupation",
+        "Age",
+        "Gender",
+        "Civil Status",
+        "Address",
+        "Contact",
+        "TIN",
+        "Registration Date",
+      ],
+    ]);
+
+    XLSX.writeFile(workbook, "coop.xlsx", { compression: true });
   };
 
   let rows = [];
@@ -95,6 +131,29 @@ function Index({ auth, members }) {
                   <IconRefresh />
                 </Button>
               </Tooltip>
+            </div>
+            <div className="mr-4">
+              <Menu>
+                <Menu.Target>
+                  <Tooltip label="Export" position="bottom">
+                    <Button variant="default">
+                      <IconTableExport />
+                    </Button>
+                  </Tooltip>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Label>Export</Menu.Label>
+                  <Menu.Item
+                    onClick={() => handleExport()}
+                    icon={<IconDownload size={14} />}
+                  >
+                    Download All Data
+                  </Menu.Item>
+                  <Menu.Item icon={<IconDownload size={14} />}>
+                    Download Current Table Data
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </div>
             <div className="mr-16">
               <Menu>
