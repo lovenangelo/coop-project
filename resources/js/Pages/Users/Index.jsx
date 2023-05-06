@@ -41,7 +41,6 @@ function Index({ auth, users }) {
 
   if (userList.data.length !== 0) {
     rows = userList.data.map((row) => {
-      console.log(row);
       return (
         <tr
           className="cursor-pointer"

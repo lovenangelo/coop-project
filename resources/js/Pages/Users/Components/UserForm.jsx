@@ -6,6 +6,7 @@ import {
   Grid,
   Divider,
   PasswordInput,
+  Select,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useForm } from "@mantine/form";
@@ -33,12 +34,19 @@ const UserForm = ({
       role: userInformation ? userInformation.role : "",
       created_at: userInformation ? new Date(userInformation.created_at) : "",
       password: "",
+      password_confirmation: "",
     },
     validate: {
-      name: (value) => (value ? null : "Invalid age"),
-      role: (value) => (value ? null : "Invalid name"),
+      name: (value) => (value ? null : "Invalid name"),
+      role: (value) => (value ? null : "Invalid role"),
       email: (value) => (value ? null : "Invalid email"),
+      created_at: (value) =>
+        isRegisteringUser ? null : value ? null : "Please enter a password",
       password: (value) => (value ? null : "Please enter a password"),
+      password_confirmation: (value) =>
+        value ? null : "Please confirm your password",
+      password_confirmation: (value) =>
+        form.values.password === value ? null : "Passwords do not match",
     },
   });
 
@@ -63,7 +71,9 @@ const UserForm = ({
   };
 
   const onRegister = (values) => {
-    router.post("/auth/register", values, {
+    const { created_at, ...regValues } = values;
+    console.log(regValues);
+    router.post("/register", regValues, {
       onError: (error) => {
         console.log(error);
         form.setErrors(error);
@@ -122,7 +132,6 @@ const UserForm = ({
   };
 
   const onFiltering = () => {
-    console.log(getUpdatedFields());
     router.get("/users/filter", getUpdatedFields(), {
       onError: (error) => {
         form.setErrors(error);
@@ -139,8 +148,7 @@ const UserForm = ({
     <div className={isFiltering ? "w-80 p-8" : ""}>
       <form
         onSubmit={form.onSubmit((values) => {
-          console.log(values);
-          // onRegister(values);
+          onRegister(values);
         })}
       >
         <Grid grow>
@@ -161,10 +169,12 @@ const UserForm = ({
             />
           </Grid.Col>
           <Grid.Col span={8}>
-            <TextInput
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
+            <Select
               label="Role"
+              data={[
+                { value: "admin", label: "Administrator" },
+                { value: "regular", label: "Regular" },
+              ]}
               {...form.getInputProps("role")}
             />
           </Grid.Col>
@@ -190,7 +200,20 @@ const UserForm = ({
                 label={"Password"}
                 maw={400}
                 mx="auto"
-                {...form.getInputProps("created_at")}
+                {...form.getInputProps("password")}
+              />
+            </Grid.Col>
+          )}
+          {isRegisteringUser && (
+            <Grid.Col span={8}>
+              <PasswordInput
+                className="w-100"
+                readOnly={readOnly && !editable}
+                required={!isFiltering}
+                label={"Confirm Password"}
+                maw={400}
+                mx="auto"
+                {...form.getInputProps("password_confirmation")}
               />
             </Grid.Col>
           )}
