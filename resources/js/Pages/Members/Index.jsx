@@ -5,8 +5,9 @@ import MemberForm from "./Components/MemberForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import Pagination from "../../Components/Pagination";
-import { useState, useEffect, useRef } from "react";
-import { DownloadTableExcel } from "react-export-table-to-excel";
+import { useState, useEffect } from "react";
+import { notifications } from "@mantine/notifications";
+
 import {
   IconPlus,
   IconFilter,
@@ -52,17 +53,30 @@ function Index({ auth, members }) {
     open();
   };
 
-  const handleExport = () => {
+  const handleExportAll = () => {
     // flatten object like this {id: 1, title:'', category: ''};
     // create workbook and worksheet
+    const rows = membersList.data.map((member) => ({
+      cid: member.cid,
+      name: member.name,
+      dateOfBirth: member.dob,
+      occupation: member.occupation,
+      age: member.age,
+      gender: member.gender,
+      civilStatus: member.civil_status,
+      address: member.address,
+      contact: member.contact,
+      tin: member.tin,
+      registrationDate: member.registration_date,
+    }));
+
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(membersList.data);
+    const worksheet = XLSX.utils.json_to_sheet(rows);
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Members");
 
     XLSX.utils.sheet_add_aoa(worksheet, [
       [
-        "ID",
         "CID",
         "Name",
         "Date of Birth",
@@ -77,7 +91,7 @@ function Index({ auth, members }) {
       ],
     ]);
 
-    XLSX.writeFile(workbook, "coop.xlsx", { compression: true });
+    XLSX.writeFile(workbook, "coop-all-members.xlsx", { compression: true });
   };
 
   let rows = [];
@@ -144,7 +158,17 @@ function Index({ auth, members }) {
                 <Menu.Dropdown>
                   <Menu.Label>Export</Menu.Label>
                   <Menu.Item
-                    onClick={() => handleExport()}
+                    onClick={() => {
+                      if (membersList.data.length > 0) {
+                        handleExportAll();
+                      } else {
+                        notifications.show({
+                          title: "Download failed",
+                          message: "No data",
+                          color: "red",
+                        });
+                      }
+                    }}
                     icon={<IconDownload size={14} />}
                   >
                     Download All Data
