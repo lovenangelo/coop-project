@@ -5,6 +5,7 @@ use App\Http\Controllers\MembersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\UserIsAdmin;
+use App\Models\Member;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -35,7 +36,9 @@ Route::get('/dashboard', function () {
   // analytics for added members per month
   // analytics for number of users per city
 
-  return Inertia::render('Dashboard',);
+  return Inertia::render('Dashboard', [
+    'data' => Member::all()
+  ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('/members', MembersController::class)
