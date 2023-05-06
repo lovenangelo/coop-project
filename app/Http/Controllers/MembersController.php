@@ -15,8 +15,11 @@ class MembersController extends Controller
   {
     $members = Member::paginate(20);
 
+    $all = Member::all();
+
     return Inertia::render('Members/Index', [
       'members' => $members,
+      'all' => $all
     ]);
   }
 
@@ -128,10 +131,12 @@ class MembersController extends Controller
     }
 
     $members = $query->paginate(20);
+    $all = $query->get();
 
     if ($members) {
       return Inertia::render('Members/Index', [
         'members' => $members,
+        'all' => $all,
       ]);
     } else {
       return to_route('members.index');

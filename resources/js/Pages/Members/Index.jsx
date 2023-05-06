@@ -18,12 +18,12 @@ import {
 import { router } from "@inertiajs/react";
 import * as XLSX from "xlsx";
 
-function Index({ auth, members }) {
+function Index({ auth, members, all }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [readOnly, setReadOnly] = useState(false);
   const [memberInformation, setMemberInformation] = useState(null);
   const [membersList, setMembersList] = useState(members);
-  console.log(membersList);
+  console.log(all);
   useEffect(() => {
     setMembersList(members);
     return () => {};
@@ -53,10 +53,10 @@ function Index({ auth, members }) {
     open();
   };
 
-  const handleExportAll = () => {
+  const handleExport = (data) => {
     // flatten object like this {id: 1, title:'', category: ''};
     // create workbook and worksheet
-    const rows = membersList.data.map((member) => ({
+    const rows = data.map((member) => ({
       cid: member.cid,
       name: member.name,
       dateOfBirth: member.dob,
@@ -160,7 +160,7 @@ function Index({ auth, members }) {
                   <Menu.Item
                     onClick={() => {
                       if (membersList.data.length > 0) {
-                        handleExportAll();
+                        handleExport(all);
                       } else {
                         notifications.show({
                           title: "Download failed",
@@ -171,13 +171,23 @@ function Index({ auth, members }) {
                     }}
                     icon={<IconDownload size={14} />}
                   >
-                    Download All Data
+                    Download All Results
                   </Menu.Item>
-                  <Menu.Item icon={<IconDownload size={14} />}>
+                  <Menu.Item
+                    onClick={() => {
+                      if (membersList.data.length > 0) {
+                        handleExport(membersList.data);
+                      } else {
+                        notifications.show({
+                          title: "Download failed",
+                          message: "No data",
+                          color: "red",
+                        });
+                      }
+                    }}
+                    icon={<IconDownload size={14} />}
+                  >
                     Download Current Table Data
-                  </Menu.Item>
-                  <Menu.Item icon={<IconDownload size={14} />}>
-                    Download Filter Results
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
