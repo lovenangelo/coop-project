@@ -176,6 +176,9 @@ function Index({ auth, members }) {
                   <Menu.Item icon={<IconDownload size={14} />}>
                     Download Current Table Data
                   </Menu.Item>
+                  <Menu.Item icon={<IconDownload size={14} />}>
+                    Download Filter Results
+                  </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
             </div>
