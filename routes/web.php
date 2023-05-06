@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthenticationLogsController;
 use App\Http\Controllers\MembersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\UserIsAdmin;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -42,7 +42,7 @@ Route::resource('/members', MembersController::class)
   ->only(['destroy'])
   ->middleware(['auth', UserIsAdmin::class]);
 
-Route::resource('/logs', MembersController::class)
+Route::resource('/logs', AuthenticationLogsController::class)
   ->only(['index'])
   ->middleware(['auth', UserIsAdmin::class]);
 
