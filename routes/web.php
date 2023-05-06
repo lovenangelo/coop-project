@@ -38,11 +38,10 @@ Route::resource('/members', MembersController::class)
   ->only(['index', 'store', 'update', 'destroy'])
   ->middleware(['auth',]);
 
-Route::resource('/users', UsersController::class)->only(['index'])
-  ->middleware(['auth', UserIsAdmin::class]);
-
 Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(['auth',]);
 
+Route::resource('/users', UsersController::class)->only(['index', 'update', 'destroy'])
+  ->middleware(['auth', UserIsAdmin::class]);
 
 Route::middleware('auth')->group(function () {
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

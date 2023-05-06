@@ -24,9 +24,9 @@ function Index({ auth, users }) {
     <thead>
       <tr>
         <th>NAME</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Created At</th>
+        <th>EMAIL</th>
+        <th>ROLE</th>
+        <th>CREATED AT</th>
       </tr>
     </thead>
   );

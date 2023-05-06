@@ -57,7 +57,22 @@ class UsersController extends Controller
    */
   public function update(Request $request, string $id)
   {
-    //
+    date_default_timezone_set('Asia/Manila');
+
+    User::validate_update($request);
+
+    $values = $request->all();
+
+    $user = User::find($id);
+
+    $user->update($values);
+
+    if ($user->isDirty()) {
+      $user->save();
+    }
+
+    // always redirect back to the index page
+    return to_route('users.index')->with('message', 'user information updated successfully ✔️');
   }
 
   /**

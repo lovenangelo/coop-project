@@ -32,7 +32,6 @@ const UserForm = ({
       name: userInformation ? userInformation.name : "",
       email: userInformation ? userInformation.email : "",
       role: userInformation ? userInformation.role : "",
-      created_at: userInformation ? new Date(userInformation.created_at) : "",
       password: "",
       password_confirmation: "",
     },
@@ -40,8 +39,7 @@ const UserForm = ({
       name: (value) => (value ? null : "Invalid name"),
       role: (value) => (value ? null : "Invalid role"),
       email: (value) => (value ? null : "Invalid email"),
-      created_at: (value) =>
-        isRegisteringUser ? null : value ? null : "Please enter a password",
+
       password: (value) => (value ? null : "Please enter a password"),
       password_confirmation: (value) =>
         value ? null : "Please confirm your password",
@@ -71,9 +69,7 @@ const UserForm = ({
   };
 
   const onRegister = (values) => {
-    const { created_at, ...regValues } = values;
-    console.log(regValues);
-    router.post("/register", regValues, {
+    router.post("/register", values, {
       onError: (error) => {
         console.log(error);
         form.setErrors(error);
@@ -171,6 +167,7 @@ const UserForm = ({
           <Grid.Col span={8}>
             <Select
               label="Role"
+              readOnly={readOnly && !editable}
               data={[
                 { value: "admin", label: "Administrator" },
                 { value: "regular", label: "Regular" },
@@ -181,13 +178,12 @@ const UserForm = ({
           {!isRegisteringUser && (
             <Grid.Col span={8}>
               <DateInput
+                value={new Date(userInformation.created_at)}
                 className="w-100"
-                readOnly={readOnly && !editable}
-                required={!isFiltering}
+                readOnly={true}
                 label={"Creation date"}
                 maw={400}
                 mx="auto"
-                {...form.getInputProps("created_at")}
               />
             </Grid.Col>
           )}
@@ -295,9 +291,7 @@ const UserForm = ({
                   className="bg-blue-600 text-white  hover:bg-blue-500"
                   fullWidth
                   onClick={() => {
-                    setModalMessage(
-                      "Are you sure to update member information?"
-                    );
+                    setModalMessage("Are you sure to update user information?");
                     setModalAction("update");
                     open();
                   }}
@@ -312,7 +306,7 @@ const UserForm = ({
                   className="bg-red-600 text-white hover:bg-red-500"
                   fullWidth
                   onClick={() => {
-                    setModalMessage("Are you sure to delete this member?");
+                    setModalMessage("Are you sure to delete this user?");
                     setModalAction("delete");
                     open();
                   }}

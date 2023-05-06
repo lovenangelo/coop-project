@@ -25,10 +25,29 @@ class Member extends Model
     'registration_date',
   ];
 
-  public static function validate(Request $request): array
+  public static function validate_store(Request $request): array
   {
     return $request->validate([
-      'cid' => ['integer', 'required'],
+      'cid' => ['required', 'integer', 'required'],
+      'name' => ['required', 'string', 'max:50', 'unique:members'],
+      'dob' => ['required', 'date', 'before:today'],
+      'occupation' => ['required', 'string', 'max:50'],
+      'age' => ['required', 'integer', 'min:18', 'max:100'],
+      'gender' => ['required', 'string', 'in:Male,Female,Other'],
+      'civil_status' => ['required', 'string', 'in:Single,Married,Divorced,Widowed'],
+      'barangay' => ['required', 'string', 'max:50'],
+      'city' => ['required', 'string', 'max:50'],
+      'province' => ['required', 'string', 'max:50'],
+      'contact' => ['required', 'numeric', 'digits:10'],
+      'tin' => ['required', 'numeric', 'digits_between:9,12'],
+      'registration_date' => ['required', 'date'],
+    ]);
+  }
+
+  public static function validate_update(Request $request): array
+  {
+    return $request->validate([
+      'cid' => ['integer',],
       'name' => ['string', 'max:50', 'unique:members'],
       'dob' => ['date', 'before:today'],
       'occupation' => ['string', 'max:50'],

@@ -25,7 +25,7 @@ class MembersController extends Controller
    */
   public function store(Request $request)
   {
-    $validated = Member::validate($request);
+    $validated = Member::validate_store($request);
 
     clock($validated);
 
@@ -58,7 +58,7 @@ class MembersController extends Controller
   {
     date_default_timezone_set('Asia/Manila');
 
-    Member::validate($request);
+    Member::validate_update($request);
 
     $values = $request->all();
 
