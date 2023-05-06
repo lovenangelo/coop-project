@@ -257,7 +257,7 @@ function Index({ auth, members, all }) {
                 {theads}
                 <tbody>{rows}</tbody>
               </Table>
-              <Pagination data={membersList} />
+              <Pagination data={membersList} all={all.length} />
             </>
           )}
         </div>
