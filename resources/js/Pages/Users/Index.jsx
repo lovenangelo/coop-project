@@ -4,7 +4,7 @@ import { Modal } from "@mantine/core";
 // import MemberForm from "./Components/MemberForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-// import Pagination from "./Components/Pagination";
+import Pagination from "../../Components/Pagination";
 import { useState, useEffect } from "react";
 import { IconPlus, IconFilter, IconRefresh } from "@tabler/icons-react";
 import { router } from "@inertiajs/react";
@@ -149,7 +149,7 @@ function Index({ auth, users }) {
                 {theads}
                 <tbody>{rows}</tbody>
               </Table>
-              {/* <Pagination members={userList} /> */}
+              <Pagination data={userList} />
             </>
           )}
         </div>
