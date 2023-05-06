@@ -253,9 +253,7 @@ function Index({ auth, members, all }) {
           {rows.length == 0 && <Center>No data</Center>}
           {rows.length !== 0 && (
             <>
-              <p>
-                Showing: {membersList.data.length}/{all.length}
-              </p>
+              <p>Total: {all.length}</p>
               <Table className="mt-4" striped highlightOnHover withBorder>
                 {theads}
                 <tbody>{rows}</tbody>
