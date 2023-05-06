@@ -42,6 +42,10 @@ Route::resource('/members', MembersController::class)
   ->only(['destroy'])
   ->middleware(['auth', UserIsAdmin::class]);
 
+Route::resource('/logs', MembersController::class)
+  ->only(['index'])
+  ->middleware(['auth', UserIsAdmin::class]);
+
 Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(['auth']);
 
 Route::resource('/users', UsersController::class)->only(['index', 'update', 'destroy'])

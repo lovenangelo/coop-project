@@ -16,7 +16,9 @@ export default function Authenticated({ user, header, children }) {
             <div className="flex">
               <div className="shrink-0 flex items-center">
                 <div className="h-10 w-12">
-                  <ApplicationLogo className="block h-10 w-12 fill-current text-gray-800" />
+                  <a href={route("dashboard")}>
+                    <ApplicationLogo className="block h-10 w-12 fill-current text-gray-800" />
+                  </a>
                 </div>
               </div>
 
@@ -39,6 +41,14 @@ export default function Authenticated({ user, header, children }) {
                     active={route().current("users.index")}
                   >
                     Users
+                  </NavLink>
+                )}
+                {user.role == "admin" && (
+                  <NavLink
+                    href={route("logs.index")}
+                    active={route().current("logs.index")}
+                  >
+                    Logs
                   </NavLink>
                 )}
               </div>
