@@ -13,9 +13,9 @@ class DatabaseSeeder extends Seeder
    */
   public function run(): void
   {
-    // \App\Models\Member::factory(100)->create();
+    \App\Models\Member::factory(100)->create();
 
-    // \App\Models\User::factory(10)->create();
+    \App\Models\User::factory(10)->create();
 
     \App\Models\User::factory()->create([
       'name' => 'Coop Admin',

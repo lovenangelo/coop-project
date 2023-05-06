@@ -28,7 +28,7 @@ class Member extends Model
   public static function validate_store(Request $request): array
   {
     return $request->validate([
-      'cid' => ['required', 'integer', 'required'],
+      'cid' => ['required', 'integer',],
       'name' => ['required', 'string', 'max:50', 'unique:members'],
       'dob' => ['required', 'date', 'before:today'],
       'occupation' => ['required', 'string', 'max:50'],

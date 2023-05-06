@@ -253,11 +253,14 @@ function Index({ auth, members, all }) {
           {rows.length == 0 && <Center>No data</Center>}
           {rows.length !== 0 && (
             <>
-              <Table striped highlightOnHover withBorder>
+              <p>
+                Showing: {membersList.data.length}/{all.length}
+              </p>
+              <Table className="mt-4" striped highlightOnHover withBorder>
                 {theads}
                 <tbody>{rows}</tbody>
               </Table>
-              <Pagination data={membersList} all={all.length} />
+              <Pagination data={membersList} />
             </>
           )}
         </div>
