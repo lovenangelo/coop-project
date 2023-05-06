@@ -16,7 +16,7 @@ class UserIsAdmin
   public function handle(Request $request, Closure $next): Response
   {
     if ($request->user()->role !== 'admin') {
-      return back()->with([
+      return to_route('dashboard')->with([
         'message' => 'unauthorized',
       ]);
     }
