@@ -80,7 +80,15 @@ class UsersController extends Controller
    */
   public function destroy(string $id)
   {
-    //
+    $user = User::find($id);
+
+    if (!$user) {
+      return response()->json(['message' => 'User not found'], 404);
+    }
+
+    $user->delete();
+
+    return to_route('users.index')->with('message', 'User deleted successfully ✔️');
   }
 
   public function filter(Request $request)
@@ -96,7 +104,7 @@ class UsersController extends Controller
     // Apply filters
     foreach ($values as $field => $value) {
       if ($field == 'created_at') {
-        $query->whereDate($field, '=', $value);
+        $query->whereDate($field, $value);
       } else {
         $query->where($field, 'like', "%$value%");
       }

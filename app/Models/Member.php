@@ -18,7 +18,7 @@ class Member extends Model
     'dob',
     'age',
     'gender',
-    'civilStatus',
+    'civil_status',
     'address',
     'contact',
     'tin',

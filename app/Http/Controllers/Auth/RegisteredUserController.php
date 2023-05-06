@@ -31,7 +31,7 @@ class RegisteredUserController extends Controller
    */
   public function store(Request $request): RedirectResponse
   {
-    User::validate($request);
+    User::validate_store($request);
 
     $user = User::create([
       'name' => $request->name,

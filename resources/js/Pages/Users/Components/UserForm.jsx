@@ -34,17 +34,19 @@ const UserForm = ({
       role: userInformation ? userInformation.role : "",
       password: "",
       password_confirmation: "",
+      created_at: userInformation ? new Date(userInformation.created_at) : "",
     },
     validate: {
       name: (value) => (value ? null : "Invalid name"),
       role: (value) => (value ? null : "Invalid role"),
       email: (value) => (value ? null : "Invalid email"),
-
       password: (value) => (value ? null : "Please enter a password"),
       password_confirmation: (value) =>
-        value ? null : "Please confirm your password",
-      password_confirmation: (value) =>
-        form.values.password === value ? null : "Passwords do not match",
+        value
+          ? null
+          : "Please confirm your password" || form.values.password === value
+          ? null
+          : "Passwords do not match",
     },
   });
 
@@ -178,12 +180,15 @@ const UserForm = ({
           {!isRegisteringUser && (
             <Grid.Col span={8}>
               <DateInput
-                value={new Date(userInformation.created_at)}
+                value={
+                  userInformation ? new Date(userInformation.created_at) : null
+                }
                 className="w-100"
-                readOnly={true}
+                readOnly={userInformation}
                 label={"Creation date"}
                 maw={400}
                 mx="auto"
+                {...form.getInputProps("created_at")}
               />
             </Grid.Col>
           )}

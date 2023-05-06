@@ -43,6 +43,9 @@ Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(
 Route::resource('/users', UsersController::class)->only(['index', 'update', 'destroy'])
   ->middleware(['auth', UserIsAdmin::class]);
 
+Route::get('/users/filter', [UsersController::class, 'filter'])->middleware(['auth', UserIsAdmin::class]);
+
+
 Route::middleware('auth')->group(function () {
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
