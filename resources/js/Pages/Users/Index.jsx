@@ -1,7 +1,7 @@
 import { Table, Button, Center, Tooltip, Menu } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Modal } from "@mantine/core";
-// import MemberForm from "./Components/MemberForm";
+import UserForm from "./Components/UserForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import Pagination from "../../Components/Pagination";
@@ -12,7 +12,7 @@ import { router } from "@inertiajs/react";
 function Index({ auth, users }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [readOnly, setReadOnly] = useState(false);
-  const [memberInformation, setMemberInformation] = useState(null);
+  const [userInformation, setUserInformation] = useState(null);
   const [userList, setUserList] = useState(users);
 
   useEffect(() => {
@@ -31,9 +31,9 @@ function Index({ auth, users }) {
     </thead>
   );
 
-  const showMemberInformation = (rowData) => {
+  const showuserInformation = (rowData) => {
     setReadOnly(true);
-    setMemberInformation(rowData);
+    setUserInformation(rowData);
     open();
   };
 
@@ -46,7 +46,7 @@ function Index({ auth, users }) {
         <tr
           className="cursor-pointer"
           key={row.id}
-          onClick={() => showMemberInformation(row)}
+          onClick={() => showuserInformation(row)}
         >
           <td>{row.name}</td>
           <td>{row.email}</td>
@@ -96,12 +96,13 @@ function Index({ auth, users }) {
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Label>Filter Members</Menu.Label>
-                  {/* <MemberForm
+                  <UserForm
                     closeForm={close}
                     readOnly={false}
-                    memberInformation={null}
+                    userInformation={null}
                     isFiltering={true}
-                  /> */}
+                    isRegisteringUser={false}
+                  />
                 </Menu.Dropdown>
               </Menu>
             </div>
@@ -111,7 +112,7 @@ function Index({ auth, users }) {
                   onClick={() => {
                     open();
                     setReadOnly(false);
-                    setMemberInformation(null);
+                    setUserInformation(null);
                   }}
                   variant="default"
                 >
@@ -125,17 +126,18 @@ function Index({ auth, users }) {
       className="mx-32 pt-2"
     >
       <Modal
-        size="lg"
+        size="sm"
         opened={opened}
         onClose={close}
-        title={!readOnly ? "ADD NEW MEMBER" : "MEMBER"}
+        title={!readOnly ? "ADD NEW USER" : "USER"}
       >
-        {/* <MemberForm
+        <UserForm
           closeForm={close}
           readOnly={readOnly}
-          memberInformation={memberInformation}
+          userInformation={userInformation}
           isFiltering={false}
-        /> */}
+          isRegisteringUser={!readOnly}
+        />
       </Modal>
 
       <Head title="Users" />

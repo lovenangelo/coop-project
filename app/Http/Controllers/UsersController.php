@@ -67,4 +67,34 @@ class UsersController extends Controller
   {
     //
   }
+
+  public function filter(Request $request)
+  {
+    $query = User::query();
+
+    $values = $request->all();
+
+    if (array_key_exists('created_at', $values)) {
+      $values['created_at'] = date('Y-m-d', strtotime($values['created_at'] . ' +1 day'));
+    }
+
+    // Apply filters
+    foreach ($values as $field => $value) {
+      if ($field == 'created_at') {
+        $query->whereDate($field, '=', $value);
+      } else {
+        $query->where($field, 'like', "%$value%");
+      }
+    }
+
+    $users = $query->paginate(20);
+
+    if ($users) {
+      return Inertia::render('Users/Index', [
+        'users' => $users,
+      ]);
+    } else {
+      return to_route('users.index');
+    }
+  }
 }

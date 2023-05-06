@@ -2,74 +2,43 @@ import {
   TextInput,
   Group,
   Button,
-  NumberInput,
-  Select,
   Text,
   Grid,
   Divider,
+  PasswordInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useForm } from "@mantine/form";
 import { DateInput } from "@mantine/dates";
-import phProvinces from "../../../utils/addressApi.js";
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 import { Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-const civil_statuses = [
-  { value: "Single", label: "Single" },
-  { value: "Married", label: "Married" },
-];
-
-const MemberForm = ({
+const UserForm = ({
   readOnly,
-  memberInformation,
+  userInformation,
   closeForm,
   isFiltering,
+  isRegisteringUser,
 }) => {
   const [editable, setEditable] = useState(!readOnly);
   const [modalMessage, setModalMessage] = useState(null);
   const [modalAction, setModalAction] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
-
-  const address = memberInformation
-    ? memberInformation.address.split(",").map((place) => place.trim())
-    : null;
-
   const form = useForm({
     initialValues: {
-      cid: memberInformation ? memberInformation.cid : "",
-      name: memberInformation ? memberInformation.name : "",
-      dob: memberInformation ? new Date(memberInformation.dob) : "",
-      occupation: memberInformation ? memberInformation.occupation : "",
-      age: memberInformation ? memberInformation.age : "",
-      gender: memberInformation ? memberInformation.gender : "",
-      civil_status: memberInformation ? memberInformation.civil_status : "",
-      barangay: memberInformation ? address[0] : "",
-      city: memberInformation ? address[1] : "",
-      province: memberInformation ? address[2] : "",
-      contact: memberInformation ? parseInt(memberInformation.contact) : "",
-      tin: memberInformation ? parseInt(memberInformation.tin) : "",
-      registration_date: memberInformation
-        ? new Date(memberInformation.registration_date)
-        : "",
+      name: userInformation ? userInformation.name : "",
+      email: userInformation ? userInformation.email : "",
+      role: userInformation ? userInformation.role : "",
+      created_at: userInformation ? new Date(userInformation.created_at) : "",
+      password: "",
     },
     validate: {
-      cid: (value) => (value ? null : "Invalid CID"),
       name: (value) => (value ? null : "Invalid age"),
-      age: (value) => (value ? null : "Invalid age"),
-      occupation: (value) => (value ? null : "Invalid occupation"),
-      dob: (value) => (value ? null : "Invalid date of birth"),
-      gender: (value) => (value ? null : "Invalid gender"),
-      civil_status: (value) => (value ? null : "Invalid civil status"),
-      barangay: (value) => (value ? null : "Invalid barangay"),
-      city: (value) => (value ? null : "Invalid city"),
-      province: (value) => (value ? null : "Invalid province"),
-      contact: (value) => (value ? null : "Invalid contact"),
-      tin: (value) => (value ? null : "Invalid TIN"),
-      registration_date: (value) =>
-        value ? null : "Invalid registration date",
+      role: (value) => (value ? null : "Invalid name"),
+      email: (value) => (value ? null : "Invalid email"),
+      password: (value) => (value ? null : "Please enter a password"),
     },
   });
 
@@ -77,7 +46,7 @@ const MemberForm = ({
   const getUpdatedFields = () => {
     let updated = {};
     for (let field in initialFormValues) {
-      const dates = field == "dob" || field == "registration_date";
+      const dates = field == "created_at";
       // checking for date fields
       if (
         dates &&
@@ -93,8 +62,8 @@ const MemberForm = ({
     return updated;
   };
 
-  const onSave = (values) => {
-    router.post("/members", values, {
+  const onRegister = (values) => {
+    router.post("/auth/register", values, {
       onError: (error) => {
         console.log(error);
         form.setErrors(error);
@@ -114,7 +83,7 @@ const MemberForm = ({
   const onUpdate = () => {
     const values = getUpdatedFields();
     console.log(values);
-    router.patch(`/members/${memberInformation.id}`, values, {
+    router.patch(`/users/${userInformation.id}`, values, {
       onError: (error) => {
         console.log(error);
         form.setErrors(error);
@@ -132,7 +101,7 @@ const MemberForm = ({
   };
 
   const onDelete = () => {
-    router.delete(`/members/${memberInformation.id}`, {
+    router.delete(`/users/${userInformation.id}`, {
       onError: (error) => {
         notifications.show({
           color: "red",
@@ -154,7 +123,7 @@ const MemberForm = ({
 
   const onFiltering = () => {
     console.log(getUpdatedFields());
-    router.get("/members/filter", getUpdatedFields(), {
+    router.get("/users/filter", getUpdatedFields(), {
       onError: (error) => {
         form.setErrors(error);
       },
@@ -170,19 +139,12 @@ const MemberForm = ({
     <div className={isFiltering ? "w-80 p-8" : ""}>
       <form
         onSubmit={form.onSubmit((values) => {
-          onSave(values);
+          console.log(values);
+          // onRegister(values);
         })}
       >
         <Grid grow>
-          <Grid.Col span={4}>
-            <TextInput
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label="CID"
-              {...form.getInputProps("cid")}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
+          <Grid.Col span={8}>
             <TextInput
               readOnly={readOnly && !editable}
               required={!isFiltering}
@@ -190,135 +152,48 @@ const MemberForm = ({
               {...form.getInputProps("name")}
             />
           </Grid.Col>
-          <Grid.Col span={4}>
-            <DateInput
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label={isFiltering ? "Birthday" : "Date of Birth"}
-              maw={400}
-              mx="auto"
-              {...form.getInputProps("dob")}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
-            <NumberInput
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label="Age"
-              hideControls
-              {...form.getInputProps("age")}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
-            <Select
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label="Gender"
-              data={[
-                { value: "Male", label: "Male" },
-                { value: "Female", label: "Female" },
-              ]}
-              {...form.getInputProps("gender")}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
-            <Select
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label="Civil Status"
-              data={civil_statuses}
-              {...form.getInputProps("civil_status")}
-            />
-          </Grid.Col>
-        </Grid>
-        <Grid grow>
-          <Grid.Col span={4}>
+          <Grid.Col span={8}>
             <TextInput
               readOnly={readOnly && !editable}
               required={!isFiltering}
-              label="Occupation"
-              {...form.getInputProps("occupation")}
+              label="Email"
+              {...form.getInputProps("email")}
             />
           </Grid.Col>
-          <Grid.Col span={4}>
-            <NumberInput
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label="Contact Number"
-              hideControls
-              {...form.getInputProps("contact")}
-            />
-          </Grid.Col>
-        </Grid>
-        <Text mt={12}>Address</Text>
-        <Grid grow>
-          <Grid.Col span={4}>
-            <Select
-              readOnly={readOnly && !editable}
-              disabled={false}
-              searchable
-              nothingFound="No options"
-              required={!isFiltering}
-              label="Province"
-              data={phProvinces.getProvinces()}
-              {...form.getInputProps("province")}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
-            <Select
-              readOnly={readOnly && !editable}
-              disabled={form.values.province.length == 0}
-              required={!isFiltering}
-              searchable
-              nothingFound="No options"
-              label="City"
-              data={
-                form.values.province.length == 0
-                  ? []
-                  : phProvinces.getCitiesFromProvince(form.values.province)
-              }
-              {...form.getInputProps("city")}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
-            <Select
-              readOnly={readOnly && !editable}
-              disabled={form.values.city.length == 0}
-              required={!isFiltering}
-              searchable
-              nothingFound="No options"
-              label="Barangay"
-              data={
-                form.values.city.length == 0
-                  ? []
-                  : phProvinces.getBarangaysFromCity(
-                      form.values.province,
-                      form.values.city
-                    )
-              }
-              {...form.getInputProps("barangay")}
-            />
-          </Grid.Col>
-        </Grid>
-        <Grid grow>
-          <Grid.Col span={4}>
+          <Grid.Col span={8}>
             <TextInput
               readOnly={readOnly && !editable}
               required={!isFiltering}
-              label="TIN"
-              {...form.getInputProps("tin")}
+              label="Role"
+              {...form.getInputProps("role")}
             />
           </Grid.Col>
-          <Grid.Col span={4}>
-            <DateInput
-              readOnly={readOnly && !editable}
-              required={!isFiltering}
-              label="Registration Date"
-              maw={400}
-              mx="auto"
-              {...form.getInputProps("registration_date")}
-            />
-          </Grid.Col>
+          {!isRegisteringUser && (
+            <Grid.Col span={8}>
+              <DateInput
+                className="w-100"
+                readOnly={readOnly && !editable}
+                required={!isFiltering}
+                label={"Creation date"}
+                maw={400}
+                mx="auto"
+                {...form.getInputProps("created_at")}
+              />
+            </Grid.Col>
+          )}
+          {isRegisteringUser && (
+            <Grid.Col span={8}>
+              <PasswordInput
+                className="w-100"
+                readOnly={readOnly && !editable}
+                required={!isFiltering}
+                label={"Password"}
+                maw={400}
+                mx="auto"
+                {...form.getInputProps("created_at")}
+              />
+            </Grid.Col>
+          )}
         </Grid>
         <Divider className="my-4"></Divider>
         <Modal
@@ -369,7 +244,7 @@ const MemberForm = ({
                 variant="default"
                 type="submit"
               >
-                Submit
+                Register
               </Button>
             )}
           </Group>
@@ -430,4 +305,4 @@ const MemberForm = ({
   );
 };
 
-export default MemberForm;
+export default UserForm;
