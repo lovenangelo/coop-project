@@ -38,7 +38,11 @@ Route::resource('/members', MembersController::class)
   ->only(['index', 'store', 'update', 'destroy'])
   ->middleware(['auth',]);
 
-Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(['auth',]);
+Route::resource('/members', MembersController::class)
+  ->only(['destroy'])
+  ->middleware(['auth', UserIsAdmin::class]);
+
+Route::get('/members/filter', [MembersController::class, 'filter'])->middleware(['auth']);
 
 Route::resource('/users', UsersController::class)->only(['index', 'update', 'destroy'])
   ->middleware(['auth', UserIsAdmin::class]);

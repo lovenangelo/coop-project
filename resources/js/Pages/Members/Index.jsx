@@ -14,7 +14,7 @@ function Index({ auth, members }) {
   const [readOnly, setReadOnly] = useState(false);
   const [memberInformation, setMemberInformation] = useState(null);
   const [membersList, setMembersList] = useState(members);
-
+  console.log(auth);
   useEffect(() => {
     setMembersList(members);
     return () => {};
@@ -146,6 +146,7 @@ function Index({ auth, members }) {
           readOnly={readOnly}
           memberInformation={memberInformation}
           isFiltering={false}
+          role={auth.user.role}
         />
       </Modal>
 

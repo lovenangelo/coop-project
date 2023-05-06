@@ -27,6 +27,7 @@ const MemberForm = ({
   memberInformation,
   closeForm,
   isFiltering,
+  role,
 }) => {
   const [editable, setEditable] = useState(!readOnly);
   const [modalMessage, setModalMessage] = useState(null);
@@ -411,6 +412,7 @@ const MemberForm = ({
             {!editable && (
               <Grid.Col span={4}>
                 <Button
+                  disabled={role !== "admin"}
                   className="bg-red-600 text-white hover:bg-red-500"
                   fullWidth
                   onClick={() => {

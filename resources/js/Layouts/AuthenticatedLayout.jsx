@@ -7,7 +7,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 export default function Authenticated({ user, header, children }) {
   const [showingNavigationDropdown, setShowingNavigationDropdown] =
     useState(false);
-
+  console.log(user);
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white border-b border-gray-100">
@@ -33,12 +33,14 @@ export default function Authenticated({ user, header, children }) {
                 >
                   Members
                 </NavLink>
-                <NavLink
-                  href={route("users.index")}
-                  active={route().current("users.index")}
-                >
-                  Users
-                </NavLink>
+                {user.role == "admin" && (
+                  <NavLink
+                    href={route("users.index")}
+                    active={route().current("users.index")}
+                  >
+                    Users
+                  </NavLink>
+                )}
               </div>
             </div>
 

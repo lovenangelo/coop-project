@@ -16,7 +16,9 @@ class UserIsAdmin
   public function handle(Request $request, Closure $next): Response
   {
     if ($request->user()->role !== 'admin') {
-      return response()->json(['error' => 'Unauthenticated.'], 401);
+      return back()->with([
+        'message' => 'unauthorized',
+      ]);
     }
 
     return $next($request);
