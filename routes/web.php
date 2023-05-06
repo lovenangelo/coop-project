@@ -31,7 +31,11 @@ Route::get('assets/{path}', function ($path) {
 });
 
 Route::get('/dashboard', function () {
-  return Inertia::render('Dashboard');
+  // send data for analytics
+  // analytics for added members per month
+  // analytics for number of users per city
+
+  return Inertia::render('Dashboard',);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('/members', MembersController::class)
