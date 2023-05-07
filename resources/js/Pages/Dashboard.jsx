@@ -96,7 +96,7 @@ export default function Dashboard({ auth, occurrences, selected, full }) {
                   data={[
                     { value: "yearly", label: "Yearly" },
                     { value: "monthly", label: "Monthly" },
-                    { value: "daily", label: "Daily" },
+                    // { value: "daily", label: "Daily" },
                     { value: "specific-date", label: "Specific Date" },
                   ]}
                 />
@@ -110,12 +110,12 @@ export default function Dashboard({ auth, occurrences, selected, full }) {
                     }}
                   />
                 )}
-                {selectValue == "daily" && (
+                {/* {selectValue == "daily" && (
                   <MonthPicker
                     value={date}
                     onChange={(value) => setDate(value)}
                   />
-                )}
+                )} */}
                 {selectValue == "specific-date" && (
                   <DatePicker
                     value={date}

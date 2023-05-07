@@ -112,10 +112,10 @@ Route::middleware('auth')->get('/members-added-reports', function (Request $requ
     $selected = 'monthly';
   }
 
-  if ($request->input('type') == 'daily') {
+  // if ($request->input('type') == 'daily') {
 
-    $selected = 'daily';
-  }
+  //   $selected = 'daily';
+  // }
 
   if ($request->input('type') == 'specific-date') {
     clock('here sd');
