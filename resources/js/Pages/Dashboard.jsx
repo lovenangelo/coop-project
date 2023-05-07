@@ -12,25 +12,31 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-export default function Dashboard({ auth, occurrences }) {
-  const [date, setDate] = useState(new Date());
-  const [selectValue, setSelectValue] = useState("all");
+import { router } from "@inertiajs/react";
 
-  const [lineChartData, setLineChartData] = useState(occurrences);
-
-  // console.log(occurrences);
-
-  useEffect(() => {
-    const handleDataFetch = () => {
-      console.log(date);
+export default function Dashboard({ auth, occurrences, selected, full }) {
+  const [date, setDate] = useState(new Date(full.date));
+  const [selectValue, setSelectValue] = useState(selected);
+  console.log(occurrences);
+  const handleDataFetch = (date) => {
+    console.log(date);
+    const values = {
+      type: selectValue,
+      year: date.getFullYear(),
+      month: date.getMonth(),
+      day: date.getDate(),
+      full: date,
     };
-
-    if (selectValue !== "all") {
-      handleDataFetch();
-    }
-
-    return () => {};
-  }, [date]);
+    // console.log(values);
+    router.get("/members-added-reports", values, {
+      onError: (error) => {
+        console.log(error);
+      },
+      onSuccess: (res) => {
+        // console.log(res);
+      },
+    });
+  };
 
   return (
     <AuthenticatedLayout
@@ -53,11 +59,23 @@ export default function Dashboard({ auth, occurrences }) {
               <LineChart
                 width={900}
                 height={600}
-                data={lineChartData}
+                data={occurrences}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" />
+                <XAxis
+                  dataKey={
+                    selected == "yearly"
+                      ? "year"
+                      : selected == "monthly"
+                      ? "month"
+                      : selected == "daily"
+                      ? "day"
+                      : selected == "specific-date"
+                      ? "date"
+                      : ""
+                  }
+                />
                 <YAxis dataKey="count" />
                 <Tooltip />
                 <Legend />
@@ -68,22 +86,41 @@ export default function Dashboard({ auth, occurrences }) {
                   className="mb-8"
                   label="Reports"
                   value={selectValue}
-                  onChange={(value) => setSelectValue(value)}
+                  onChange={(value) => {
+                    if (value == "yearly") {
+                      router.get("/dashboard");
+                    }
+                    setSelectValue(value);
+                    setDate(null);
+                  }}
                   data={[
-                    { value: "all", label: "All" },
+                    { value: "yearly", label: "Yearly" },
                     { value: "monthly", label: "Monthly" },
                     { value: "daily", label: "Daily" },
                     { value: "specific date", label: "Specific Date" },
                   ]}
                 />
                 {selectValue == "monthly" && (
-                  <YearPicker value={date} onChange={setDate} />
+                  <YearPicker
+                    value={date}
+                    onChange={(value) => {
+                      console.log(value);
+                      setDate(value);
+                      handleDataFetch(value);
+                    }}
+                  />
                 )}
                 {selectValue == "daily" && (
-                  <MonthPicker value={date} onChange={setDate} />
+                  <MonthPicker
+                    value={date}
+                    onChange={(value) => setDate(value)}
+                  />
                 )}
                 {selectValue == "specific date" && (
-                  <DatePicker value={date} onChange={setDate} />
+                  <DatePicker
+                    value={date}
+                    onChange={(value) => setDate(value)}
+                  />
                 )}
               </Flex>
             </Flex>

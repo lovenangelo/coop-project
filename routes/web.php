@@ -6,6 +6,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\UserIsAdmin;
 use App\Models\Member;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -21,6 +23,9 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
+  if (auth()->check()) {
+    return to_route('dashboard');
+  }
   return Inertia::render('Welcome', [
     'canLogin' => Route::has('login'),
     'canRegister' => Route::has('register'),
@@ -36,8 +41,13 @@ Route::get('/dashboard', function () {
     ->groupBy('year')
     ->get();
 
+  $currentDate = new DateTime();
+
+  clock($currentDate);
   return Inertia::render('Dashboard', [
-    'occurrences' => $occurrences
+    'occurrences' => $occurrences,
+    'selected' => 'yearly',
+    'full' => $currentDate
   ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -63,6 +73,55 @@ Route::resource('/users', UsersController::class)->only(['index', 'update', 'des
 
 Route::get('/users/filter', [UsersController::class, 'filter'])->middleware(['auth', UserIsAdmin::class]);
 
+Route::middleware('auth')->get('/members-added-reports', function (Request $request) {
+
+  $occurrences = [];
+
+  $allMonths = [];
+  for ($i = 1; $i <= 12; $i++) {
+    $month = str_pad($i, 2, '0', STR_PAD_LEFT); // Add leading zero if needed
+    $allMonths[] = date('M', strtotime($request->input('year') . '-' . $month . '-01'));
+  }
+
+  if ($request->input('type') == 'monthly') {
+    $occurrences = DB::table('members')
+      ->select(DB::raw('COUNT(*) as count'), DB::raw('MONTH(registration_date) as month'))
+      ->whereYear('registration_date', $request->input('year'))
+      ->groupBy(DB::raw('MONTH(registration_date)'))
+      ->orderBy(DB::raw('MONTH(registration_date)'))
+      ->get();
+
+    $partial = [];
+    foreach ($allMonths as $month) {
+      $found = false;
+      $index = array_search($month, $allMonths);
+      foreach ($occurrences as $occurrence) {
+        if ($occurrence->month == $index) {
+          $partial[$index] = (object) ['month' => $month, 'count' => $occurrence->count];
+          $found = true;
+          break;
+        }
+      }
+      if (!$found) {
+        $partial[$index] = (object) ['month' => $month, 'count' => 0];
+      }
+    }
+    $occurrences = $partial;
+  }
+
+  if ($request->input('type') == 'daily') {
+  }
+
+  if ($request->input('type') == 'specific-date') {
+  }
+
+  clock($request->input('full'));
+  return Inertia::render('Dashboard', [
+    'occurrences' => $occurrences,
+    'selected' => 'monthly',
+    'full' => ['date' => $request->input('full')]
+  ]);
+});
 
 Route::middleware('auth')->group(function () {
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
