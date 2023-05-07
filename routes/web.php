@@ -77,6 +77,8 @@ Route::middleware('auth')->get('/members-added-reports', function (Request $requ
 
   $occurrences = [];
 
+  $selected = '';
+
   $allMonths = [];
   for ($i = 1; $i <= 12; $i++) {
     $month = str_pad($i, 2, '0', STR_PAD_LEFT); // Add leading zero if needed
@@ -107,18 +109,31 @@ Route::middleware('auth')->get('/members-added-reports', function (Request $requ
       }
     }
     $occurrences = $partial;
+    $selected = 'monthly';
   }
 
   if ($request->input('type') == 'daily') {
+
+    $selected = 'daily';
   }
 
   if ($request->input('type') == 'specific-date') {
+    clock('here sd');
+    $query = Member::whereDate('registration_date', '=', date('Y-m-d', strtotime($request->input('full') . ' +1 day')));
+    $occurrences = [
+      [
+        'count' => $query->count(),
+        'date' => date('Y-m-d', strtotime($request->input('full') . ' +1 day'))
+      ]
+    ];
+    clock($occurrences, date('Y-m-d', strtotime($request->input('full') . ' +1 day')));
+    $selected = 'specific-date';
   }
 
   clock($request->input('full'));
   return Inertia::render('Dashboard', [
     'occurrences' => $occurrences,
-    'selected' => 'monthly',
+    'selected' => $selected,
     'full' => ['date' => $request->input('full')]
   ]);
 });

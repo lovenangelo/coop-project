@@ -2,7 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Flex, Select, Text } from "@mantine/core";
 import { DatePicker, MonthPicker, YearPicker } from "@mantine/dates";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -27,7 +27,7 @@ export default function Dashboard({ auth, occurrences, selected, full }) {
       day: date.getDate(),
       full: date,
     };
-    // console.log(values);
+    console.log(values);
     router.get("/members-added-reports", values, {
       onError: (error) => {
         console.log(error);
@@ -97,7 +97,7 @@ export default function Dashboard({ auth, occurrences, selected, full }) {
                     { value: "yearly", label: "Yearly" },
                     { value: "monthly", label: "Monthly" },
                     { value: "daily", label: "Daily" },
-                    { value: "specific date", label: "Specific Date" },
+                    { value: "specific-date", label: "Specific Date" },
                   ]}
                 />
                 {selectValue == "monthly" && (
@@ -116,10 +116,13 @@ export default function Dashboard({ auth, occurrences, selected, full }) {
                     onChange={(value) => setDate(value)}
                   />
                 )}
-                {selectValue == "specific date" && (
+                {selectValue == "specific-date" && (
                   <DatePicker
                     value={date}
-                    onChange={(value) => setDate(value)}
+                    onChange={(value) => {
+                      setDate(value);
+                      handleDataFetch(value);
+                    }}
                   />
                 )}
               </Flex>
