@@ -32,12 +32,12 @@ Route::get('assets/{path}', function ($path) {
 });
 
 Route::get('/dashboard', function () {
-  // send data for analytics
-  // analytics for added members per month
-  // analytics for number of users per city
+  $occurrences = Member::selectRaw('YEAR(registration_date) as year, count(*) as count')
+    ->groupBy('year')
+    ->get();
 
   return Inertia::render('Dashboard', [
-    'data' => Member::all()
+    'occurrences' => $occurrences
   ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

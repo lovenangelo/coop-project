@@ -1,8 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Flex, Select } from "@mantine/core";
+import { Flex, Select, Text } from "@mantine/core";
 import { DatePicker, MonthPicker, YearPicker } from "@mantine/dates";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -11,21 +11,26 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  Label,
 } from "recharts";
-export default function Dashboard({ auth, data }) {
+export default function Dashboard({ auth, occurrences }) {
   const [date, setDate] = useState(new Date());
-  const [selectValue, setSelectValue] = useState("yearly");
-  // const data = [
-  //   {
-  //     name: "November",
-  //     uv: 4000,
-  //     pv: 2400,
-  //     amt: 2400,
-  //   },
-  // ];
+  const [selectValue, setSelectValue] = useState("all");
 
-  console.log(data);
+  const [lineChartData, setLineChartData] = useState(occurrences);
+
+  // console.log(occurrences);
+
+  useEffect(() => {
+    const handleDataFetch = () => {
+      console.log(date);
+    };
+
+    if (selectValue !== "all") {
+      handleDataFetch();
+    }
+
+    return () => {};
+  }, [date]);
 
   return (
     <AuthenticatedLayout
@@ -41,21 +46,22 @@ export default function Dashboard({ auth, data }) {
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <Text fz="xl" fw={700} className="p-6">
+              Membership Growth
+            </Text>
             <Flex className="p-6">
               <LineChart
                 width={900}
                 height={600}
-                data={data}
+                data={lineChartData}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
-                <Label value="Pages of my website" offset={0} position="top" />
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
+                <XAxis dataKey="year" />
+                <YAxis dataKey="count" />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-                <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="count" stroke="#8884d8" />
               </LineChart>
               <Flex direction="column">
                 <Select
@@ -64,18 +70,19 @@ export default function Dashboard({ auth, data }) {
                   value={selectValue}
                   onChange={(value) => setSelectValue(value)}
                   data={[
-                    { value: "yearly", label: "Yearly" },
+                    { value: "all", label: "All" },
                     { value: "monthly", label: "Monthly" },
-                    { value: "day", label: "Day" },
+                    { value: "daily", label: "Daily" },
+                    { value: "specific date", label: "Specific Date" },
                   ]}
                 />
-                {selectValue == "yearly" && (
+                {selectValue == "monthly" && (
                   <YearPicker value={date} onChange={setDate} />
                 )}
-                {selectValue == "monthly" && (
+                {selectValue == "daily" && (
                   <MonthPicker value={date} onChange={setDate} />
                 )}
-                {selectValue == "day" && (
+                {selectValue == "specific date" && (
                   <DatePicker value={date} onChange={setDate} />
                 )}
               </Flex>
